@@ -28,6 +28,7 @@ Channel
 process bowtie{
   publishDir path:params.outdir, mode:'copy', pattern:"*.log"
   label 'bowtie1'
+  label 'high_mem'
   input:
     tuple id, file(reads1), file(reads2) from fastq_ch
 
@@ -37,8 +38,8 @@ process bowtie{
     file "${id}.2.log" into log2
   script:
   """
-  zcat $reads1 | bowtie -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.1.log > ${id}.1.sam 
-  zcat $reads2 | bowtie -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.2.log > ${id}.2.sam  
+  zcat $reads1 | bowtie -p ${task.cpus} -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.1.log > ${id}.1.sam 
+  zcat $reads2 | bowtie -p ${task.cpus} -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.2.log > ${id}.2.sam  
   """
 }
 
