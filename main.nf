@@ -26,36 +26,20 @@ Channel
      .set { metadata }
 
 process bowtie{
-  publishDir path:params.outdir, mode:'copy', pattern:"*.log"
+  publishDir path:params.outdir, mode:'copy'
   label 'bowtie1'
   label 'high_mem'
   input:
     tuple id, file(reads1), file(reads2) from fastq_ch
 
   output:
-    tuple id, file ("${id}.1.sam"), file ("${id}.2.sam") into sams
+    tuple id, file ("${id}.1.bam"), file ("${id}.2.bam") into bams
     file "${id}.1.log" into log1
     file "${id}.2.log" into log2
   script:
   """
-  zcat $reads1 | bowtie -p ${task.cpus} -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.1.log > ${id}.1.sam 
-  zcat $reads2 | bowtie -p ${task.cpus} -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.2.log > ${id}.2.sam  
-  """
-}
-
-process samtobam{
-  publishDir path:params.outdir, mode:'copy'
-  label 'samtools'
-  input:
-    tuple id, file (align1), file (align2) from sams
-
-  output:
-    tuple id, file ("${align1.baseName}.bam"), file ("${align2.baseName}.bam") into bams
-
-  script:
-  """
-  samtools view -bS $align1 > ${id}.1.bam
-  samtools view -bS $align2 > ${id}.2.bam
+  zcat $reads1 | bowtie -p ${task.cpus} -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.1.log |samtools view -bS > ${id}.1.bam 
+  zcat $reads2 | bowtie -p ${task.cpus} -q -a --best --strata --sam -v 3 ${params.gbrs_data}/transcripts - 2>${id}.2.log |samtools view -bS > ${id}.2.bam  
   """
 }
 
