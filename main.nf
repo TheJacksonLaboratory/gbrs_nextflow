@@ -231,6 +231,7 @@ process RSEMit{
   output:
     tuple id, file ("${id}_RSEM_count.isoforms.results") into rsem_iso_count
     tuple id, file ("${id}_RSEM_count.genes.results") into rsem_genes_count
+    file "${id}_RSEM_count.genes.results" into rsem_genes_count2
   script:
   """
   rsem-calculate-expression --bam --paired-end -p ${task.cpus} \\
@@ -240,6 +241,22 @@ process RSEMit{
   ${id}_RSEM_count
   """
 }
+
+process RSEM_table{
+  publishDir path:params.outdir, mode:'copy'
+  label 'RSEM'
+  input:
+    file genes from rsem_genes_count2.collect()
+
+  output:
+    file "RSEM_genes_table.txt" into rsem_table
+
+  script:
+  """
+  rsem-generate-data-matrix $genes >  RSEM_genes_table.txt
+  """
+}
+
 /*
  * Salmon get transcripts and index
  */
