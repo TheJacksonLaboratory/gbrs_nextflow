@@ -20,7 +20,7 @@ Channel
      .fromFilePairs(params.datadir + '/**R{1,2}*.fastq.gz', flat: true)
      .map { prefix, file1, file2 -> tuple(getLibraryId(prefix), file1, file2) }
      .groupTuple() 
-     .filter { it[0] =~ /^[0-9]/}
+//     .filter { it[0] =~ /^[0-9]/}
      .into { fastq_ch; fastq_ch_sal; fastq_ch_star }
 
 // Read the metadata file with Sex and generation
