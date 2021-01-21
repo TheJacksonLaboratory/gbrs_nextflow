@@ -45,9 +45,9 @@ Channel
  * Run the classical GBRS pipeline with bowtie1
  */
 
-/*
+
 process bowtie{
-  publishDir path:params.outdir, mode:'copy', pattern:"*.{log,fastq}"
+  publishDir path:params.outdir, mode:'copy', pattern:"*.{log}"
   label 'bowtie1'
   label 'high_mem'
   input:
@@ -97,7 +97,7 @@ process bamtoemase{
                 -o ${id}.merged_compressed.h5
   """
 }
-
+/*
 // joins the metadata with the merged into one channel
 metadata.join(aln_compressed).into {compm1; compm2}
 process quantify{
@@ -157,7 +157,7 @@ process exportgeno{
   """
 }
 
-*/
+
 Channel
   .fromPath(params.gbrs_data + "/suppFiles/C57BL6J/C57BL6J.fa")
   .into{genome_fa; genome_fa2; star_genome; rsem_genome}
@@ -727,3 +727,4 @@ process eQTL_rdata{
   
   """
 }
+*/
