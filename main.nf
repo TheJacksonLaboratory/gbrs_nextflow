@@ -98,3 +98,41 @@ process bamtoemase{
                 -o ${id}.merged_compressed.h5
   """
 }
+
+metadata.join(aln_compressed).into {compm1; compm2}
+process quantify{
+  publishDir path:params.outdir, mode:'copy'
+  label 'gbrs'
+  label 'high_mem'
+  input:
+    tuple id, sex, generation, file (comp) from compm1
+    val model from params.model
+    env GBRS_DATA from params.gbrs_data
+  output:
+    file "*" into publish
+    file "${id}.gbrs.interpolated.genoprobs.npz" into genoprobs
+    tuple id, file("${id}.multiway.isoforms.tpm") into genes_tpm
+  script:
+  """
+  gbrs quantify -i ${comp} \
+                -g ${params.gbrs_data}/ref.gene2transcripts.tsv \
+                -L ${params.gbrs_data}/gbrs.hybridized.targets.info \
+                -M ${model}  --report-alignment-counts -o ${id}
+  gbrs reconstruct -e ${id}.multiway.genes.tpm \
+                  -t ${params.gbrs_data}/tranprob.DO.${generation}.${sex}.npz \
+                  -x ${params.gbrs_data}/avecs.npz \
+                  -g ${params.gbrs_data}/ref.gene_pos.ordered.npz -o ${id}
+  gbrs quantify -i ${comp} \
+                -G ${id}.genotypes.tsv \
+                -g ${params.gbrs_data}/ref.gene2transcripts.tsv \
+                -L ${params.gbrs_data}/gbrs.hybridized.targets.info \
+                -M ${model}  --report-alignment-counts -o ${id}
+  gbrs interpolate -i ${id}.genoprobs.npz \
+               -g ${params.gbrs_data}/ref.genome_grid.69k.noYnoMT_KBEdit.txt \
+               -p ${params.gbrs_data}/ref.gene_pos.ordered_0.1.6.npz \
+               -o ${id}.gbrs.interpolated.genoprobs.npz
+  gbrs plot -i ${id}.gbrs.interpolated.genoprobs.npz \
+               -o ${id}.gbrs.plotted.genome.pdf \
+               -n ${id}
+  """
+}
