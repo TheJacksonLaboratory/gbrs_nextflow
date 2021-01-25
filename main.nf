@@ -47,7 +47,7 @@ Channel
 
 
 process bowtie{
-  publishDir path:params.outdir, mode:'copy', pattern:"*.{log}"
+  publishDir path:params.outdir, mode:'copy'
   label 'bowtie1'
   label 'high_mem'
   input:
@@ -67,6 +67,7 @@ process bowtie{
 }
 
 process bamtoemase{
+  publishDir path:params.outdir, mode:'copy'
   label 'gbrs'
   label 'high_mem'
   input:
