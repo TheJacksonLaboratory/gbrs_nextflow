@@ -45,7 +45,7 @@ Channel
  * Run the classical GBRS pipeline with bowtie1
  */
 
-/*
+
 process bowtie{
   publishDir path:params.outdir, mode:'copy', pattern:"*.{log,fastq}"
   label 'bowtie1'
@@ -157,7 +157,7 @@ process exportgeno{
   """
 }
 
-*/
+
 Channel
   .fromPath(params.gbrs_data + "/suppFiles/C57BL6J/C57BL6J.fa")
   .into{genome_fa; genome_fa2; star_genome; rsem_genome}
@@ -305,7 +305,7 @@ process transcriptsToFasta {
     gffread -F -w transcripts.fa -g $fasta ${gtf}.2
     """
 }
-/*
+
 
 process makeSalmonIndex {
   label 'salmon'
@@ -426,7 +426,7 @@ process col_corr{
   """
 }
 
-*/
+
 /*
  * Run the eQTL:
  *   - Read the RSEM results with txImport
