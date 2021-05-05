@@ -624,7 +624,7 @@ process eQTL_rdata{
     (sum(shuflod >= LOD)+1)/(length(shuflod)+1)
   }
   maRt = useMart(biomart = "ENSEMBL_MART_ENSEMBL",
-               host = "dec2015.archive.ensembl.org",
+               host = "nov2020.archive.ensembl.org",
                dataset = "mmusculus_gene_ensembl")
   maRt_filter = "ensembl_gene_id"
   maRt_attributes = c("mgi_symbol","chromosome_name","start_position",
