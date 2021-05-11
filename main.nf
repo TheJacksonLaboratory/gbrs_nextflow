@@ -8,6 +8,7 @@ params.covar = "/projects/csna/csna_workflow/data/Jackson_Lab_11_batches/covar.c
 params.model = 4
 params.rdata = "rdata"
 params.minreads = 10
+params.qthreshold = 7
 params.minsamples = 0.8 // At least 0.8 of the samples have at least 5 reads
 params.cisdist = 2 // distance for QTL to be considered as cis eQTL
 def getLibraryId( prefix ){
@@ -549,7 +550,7 @@ process rungene{
                       addcovar = covar,
                       cores = ${task.cpus})
     qtl_peaks_7 = find_peaks(qtl_cis_i, map=map,
-                             threshold=7)
+                             threshold=${params.qthreshold})
     # Take only the maximal peak for each gene. This is done for statistical reasons
     # Since the empirical p-value use only the top score
     qtl_peaks_7 <- qtl_peaks_7[which.max(qtl_peaks_7\$lod),]
