@@ -9,7 +9,7 @@ params.model = 4
 params.rdata = "rdata"
 params.minreads = 10
 params.minsamples = 0.8 // At least 0.8 of the samples have at least 5 reads
-
+params.cisdist = 2 // distance for QTL to be considered as cis eQTL
 def getLibraryId( prefix ){
   // Return the ID number
   prefix.split("_")[0]
@@ -697,7 +697,7 @@ process eQTL_rdata{
   alleqtls\$gene <- sapply(sapply(alleqtls\$gene, strsplit, "_"), "[[", 1)
   alleqtls <- merge(alleqtls, snps[!duplicated(paste(snps\$chr, snps\$pos, sep="-")),], all.x = TRUE, all.y = FALSE, by = c("chr", "pos"))
   alleqtls <- merge(alleqtls, annotation, by.x = "gene", by.y = "gene.id", suffixes=c("", ".gene"))
-  alleqtls\$cis <- alleqtls\$chr == alleqtls\$chr.gene & alleqtls\$start >= alleqtls\$pos-10 & alleqtls\$end <= alleqtls\$pos+10
+  alleqtls\$cis <- alleqtls\$chr == alleqtls\$chr.gene & alleqtls\$start >= alleqtls\$pos-$cisdist & alleqtls\$end <= alleqtls\$pos+$cisdist
   write.csv(alleqtls, "all_genes_eQTL_peaks_results.csv")
   lod.peaks <- tibble(gene.id = alleqtls\$gene, marker.id = alleqtls\$marker, lod = alleqtls\$LOD)
 
